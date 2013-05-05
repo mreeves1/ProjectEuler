@@ -53,7 +53,7 @@ abstract class Problem_Abstract
 
     protected function getServerInfo()
     {
-
+        // also things like: memory_get_peak_usage
     }
 
     protected function logInfo($data)

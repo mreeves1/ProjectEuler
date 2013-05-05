@@ -15,6 +15,7 @@
 class Problem1 extends Problem_Abstract
 {
     /**
+     * Maximum number we should sum below
      * @const int NUMBER_MAX
      */
     const NUMBER_MAX = 1000;
@@ -30,9 +31,9 @@ class Problem1 extends Problem_Abstract
     }
 
     /**
-     * Return sum of all numbers that are multiples of 3 or 5
+     * Return sum of all numbers that are multiples of 3 or 5 below limit
      *
-     * @param int $limit Maximum number we should sum below
+     * @param int $limit maximum number we should sum below
      *
      * @return int
      */
