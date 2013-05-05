@@ -25,21 +25,30 @@ $includePathsArray = array(
 $includePathNew = implode(PS, $includePathsArray).PS.ini_get('include_path');
 ini_set("include_path", $includePathNew);
 
+// Memory and Timeout Settings
+
+
 // Error Settings
 error_reporting(E_ALL | E_STRICT);
 ini_set('display_errors', 1);
 umask(0);
 
 // Autoload Settings
-/*
- * Based on PSR-0 lightweight autoloader spec
- * https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md#splclassloader-implementation
+/**
+ * Based on the name of the class, requires the appropriate file so we don't have to explicitly do so
+ * Based on PSR-0 lightweight autoloader spec describes in the link below
+ *
+ * @link https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md#splclassloader-implementation
+ *
+ * @param string $className The class that we want to load
+ * @return void
  */
 function autoload($className)
 {
     $className = ltrim($className, '\\');
     $fileName  = '';
     $namespace = '';
+
     if ($lastNsPos = strripos($className, '\\')) {
         $namespace = substr($className, 0, $lastNsPos);
         $className = substr($className, $lastNsPos + 1);
@@ -49,4 +58,5 @@ function autoload($className)
 
     require $fileName;
 }
+
 spl_autoload_register('autoload');
