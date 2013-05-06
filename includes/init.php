@@ -26,7 +26,7 @@ $includePathNew = implode(PS, $includePathsArray).PS.ini_get('include_path');
 ini_set("include_path", $includePathNew);
 
 // Memory and Timeout Settings
-ini_set('memory_limit','16M');
+ini_set('memory_limit','64M');
 ini_set('max_execution_time', 600); // 10 minutes for now
 ini_set('max_input_time', 600);
 
