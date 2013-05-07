@@ -14,18 +14,9 @@
  * @author Michael Reeves <mike.reeves@gmail.com>
  * @link http://projecteuler.net/problem=3
  *
- *
- *
  */
 class Problem3 extends Problem_Abstract
 {
-
-    /**
-     * Project Euler says each problem should take no more than 1 minute. If your computer is slow make this larger.
-     * $const int PROBLEM_TIMEOUT Used with set_timeout_limit to throw a timeout if problem computation takes too long.
-     */
-    const PROBLEM_TIMEOUT_OVERRIDE = 30; // should override parent value?
-
     /**
      * Number we are finding prime factors for
      * @const string NUMBER_INPUT
@@ -33,14 +24,11 @@ class Problem3 extends Problem_Abstract
     const NUMBER_INPUT = '600851475143'; // Problem 3 value
     // const NUMBER_INPUT = '13195'; // Test case. Answer should be 29.
 
-    private $_primes = array(2);
-
     /**
-     * Override default timeout of 60 seconds
+     * Check if critical extension to do math on large integers is available
      */
     public function __construct()
     {
-        set_time_limit(self::PROBLEM_TIMEOUT_OVERRIDE);
         if (!extension_loaded('bcmath')) {
             // TODO: throw nicer exception if bcmath is not available
             die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
@@ -77,10 +65,8 @@ class Problem3 extends Problem_Abstract
             return true;
         }
         // TODO: We should remember our old primes and start from the last one instead of 3.
-        // for($j = 2; $j < sqrt($number); $j++){
         $upperBound = bcsqrt((string) $number);
-        // echo '$upperBound: '.$upperBound.'<br/>'; // debug
-        for ($j = 2; $j < $upperBound; $j++) {
+        for ($j = 3; $j < $upperBound; $j = $j + 2) { // only need to test odd numbers > 2 for prime
             if ($number % $j === 0) {
                 return false;
             }
@@ -99,13 +85,10 @@ class Problem3 extends Problem_Abstract
         $i = 2;
         $primeFactors = array();
         while (bccomp($number, '1') > 0) {
-        // while ($number > 1){ //stop after the number can't be divided again
             $mod = (int) bcmod($number, (string) $i);
             if ($mod === 0 && $this->isPrime($i)) {
-            // if (($number % $i === 0) && $this->isPrime($i)){
                 $primeFactors[] = $i;
                 $number = bcdiv($number, (string) $i);
-                // echo 'found prime factor: '.$i.'. Number is now "'. $number .'."<br>'; // debug
                 continue;
             }
             $i++;
