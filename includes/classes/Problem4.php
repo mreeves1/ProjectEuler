@@ -16,18 +16,17 @@
  */
 class Problem4 extends Problem_Abstract
 {
+    /**
+     * Smallest number to test
+     * @const int INPUT
+     */
+    const LOWER_BOUND = 100;
 
     /**
      * Largest number to test
-     * @const string INPUT
+     * @const int INPUT
      */
     const UPPER_BOUND = 999;
-
-    /**
-     * Smallest number to test
-     * @const string INPUT
-     */
-    const LOWER_BOUND = 100;
 
     /**
      * Wrapper method to output our answer with the appropriate input variables
@@ -36,13 +35,13 @@ class Problem4 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findLargestPalindrome(self::UPPER_BOUND, self::LOWER_BOUND);
+        return $this->findLargestPalindrome(self::LOWER_BOUND, self::UPPER_BOUND);
     }
 
     /**
      * Test if a number is a palindrome (ie 12721 is a palindrome because it looks the same reversed)
      *
-     * @param string $number number to test
+     * @param int $number number to test
      *
      * @return bool result of test of $number for being a palindrome
      */
@@ -61,12 +60,12 @@ class Problem4 extends Problem_Abstract
     /**
      * Find largest palindrome within bounds.
      *
-     * @param string $upperBound largest number to test
-     * @param string $lowerBound smallest number to test
+     * @param int $upperBound largest number to test
+     * @param int $lowerBound smallest number to test
      *
      * @return int largest palindrome
      */
-    private function findLargestPalindrome($upperBound, $lowerBound){
+    private function findLargestPalindrome($lowerBound, $upperBound){
         $largestPalindrome = 0;
         for ($i = $upperBound; $i >= $lowerBound; $i--){
             for ($j = $upperBound; $j >= $lowerBound; $j--){
