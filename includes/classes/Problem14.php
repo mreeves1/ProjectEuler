@@ -22,7 +22,7 @@
  * @category ProjectEuler
  * @package Problem14
  * @author Michael Reeves <mike.reeves@gmail.com>
- * @link http://projecteuler.net/problem=X
+ * @link http://projecteuler.net/problem=14
  *
  */
 class Problem14 extends Problem_Abstract
