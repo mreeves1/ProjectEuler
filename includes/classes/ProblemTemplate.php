@@ -1,20 +1,18 @@
 <?php
 /**
- * Project Euler - Problem X
+ * Project Euler - Problem %%PROB_NUMBER%%
  *
- * Problem Short Description
+ * %%PROB_DESC_SHORT%%
  *
- * Problem...
- * Long...
- * Description... or notes...
+ * %%PROB_DESC_LONG%% 
  *
  * @category ProjectEuler
- * @package ProblemX
+ * @package Problem%%PROB_NUMBER%%
  * @author Michael Reeves <mike.reeves@gmail.com>
- * @link http://projecteuler.net/problem=X
+ * @link http://projecteuler.net/problem=%%PROB_NUMBER%%
  *
  */
-class ProblemX extends Problem_Abstract
+class Problem%%PROB_NUMBER%% extends Problem_Abstract
 {
 
     /**
@@ -34,6 +32,7 @@ class ProblemX extends Problem_Abstract
      */
     public function __construct()
     {
+        parent::__construct(); 
         set_time_limit(self::PROBLEM_TIMEOUT_OVERRIDE);
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code
@@ -50,7 +49,6 @@ class ProblemX extends Problem_Abstract
     {
         return $this->findSomething(self::INPUT);
     }
-
 
     /**
      * Find "Something".
