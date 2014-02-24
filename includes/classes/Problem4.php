@@ -17,6 +17,12 @@
 class Problem4 extends Problem_Abstract
 {
     /**
+     * Project Euler says each problem should take no more than 1 minute. If your computer is slow, make this larger.
+     * @const int PROBLEM_TIMEOUT_OVERRIDE Used with set_timeout_limit to extend timeout if computation takes too long.
+     */
+    const PROBLEM_TIMEOUT_OVERRIDE = 120;
+
+    /**
      * Smallest number to test
      * @const int INPUT
      */
@@ -27,6 +33,15 @@ class Problem4 extends Problem_Abstract
      * @const int INPUT
      */
     const UPPER_BOUND = 999;
+
+    /**
+     * Override default timeout of 60 seconds
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        set_time_limit(self::PROBLEM_TIMEOUT_OVERRIDE);
+    }
 
     /**
      * Wrapper method to output our answer with the appropriate input variables

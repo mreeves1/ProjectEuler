@@ -29,6 +29,7 @@ class Problem3 extends Problem_Abstract
      */
     public function __construct()
     {
+        parent::__construct();
         if (!extension_loaded('bcmath')) {
             // TODO: throw nicer exception if bcmath is not available
             die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');

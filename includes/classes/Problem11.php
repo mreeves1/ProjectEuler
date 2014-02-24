@@ -49,6 +49,7 @@ class Problem11 extends Problem_Abstract
      */
     public function __construct()
     {
+        parent::__construct();
         $this->grid[] = array(8, 2, 22, 97, 38, 15, 0, 40, 0, 75, 4, 5, 7, 78, 52, 12, 50, 77, 91, 8);
         $this->grid[] = array(49, 49, 99, 40, 17, 81, 18, 57, 60, 87, 17, 40, 98, 43, 69, 48, 4, 56, 62, 0);
         $this->grid[] = array(81, 49, 31, 73, 55, 79, 14, 29, 93, 71, 40, 67, 53, 88, 30, 3, 49, 13, 36, 65);
@@ -94,7 +95,7 @@ class Problem11 extends Problem_Abstract
         for ($x = 0; $x <= $xMax; $x++) {
             for ($y = 0; $y <= $yMax; $y++) {
                 // We need to test all adjacent numbers. Only up, diagonal up/right, right, diagonal down/right.
-                
+
                 // Up
                 if ($y > 3) {
                     $testProduct = $grid[$y][$x] * $grid[$y - 1][$x] * $grid[$y - 2][$x] * $grid[$y - 3][$x];

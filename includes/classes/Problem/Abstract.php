@@ -22,12 +22,23 @@ abstract class Problem_Abstract
     const TIMER_STATUS_STARTED = 1;
     const TIMER_STATUS_STOPPED = 0;
 
+    private $t1;
+    private $t2;
+
     private $_timerArray = array('DEFAULT' => 0);
-    private $_timerStatus = self::TIMER_STATUS_STOPPED;
+    private $_timerStatus = array('DEFAULT' => self::TIMER_STATUS_STOPPED);
 
     public function __construct()
     {
+        $this->t1 = microtime(true);
         set_time_limit(self::PROBLEM_TIMEOUT);
+    }
+
+    public function __destruct()
+    {
+        $this->t2 = microtime(true);
+        $totalTime = $this->t2 - $this->t1;
+        echo "Took ".round($totalTime, 4)." seconds<br/>\n";
     }
 
     // TODO: Add timer, server and logging functionality
@@ -54,6 +65,8 @@ abstract class Problem_Abstract
     protected function getServerInfo()
     {
         // also things like: memory_get_peak_usage
+        // some ideas:
+        // http://serverfault.com/questions/112542/how-can-i-get-processor-ram-disk-specs-from-the-linux-command-line
     }
 
     protected function logInfo($data)

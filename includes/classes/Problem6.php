@@ -23,7 +23,10 @@
  */
 class Problem6 extends Problem_Abstract
 {
-
+    /**
+     * Natural number upper bound
+     * @const int INPUT
+     */
     const INPUT = 100;
 
     /**

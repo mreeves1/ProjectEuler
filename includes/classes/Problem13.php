@@ -133,6 +133,7 @@ LINES;
      */
     public function __construct()
     {
+        parent::__construct();
         set_time_limit(self::PROBLEM_TIMEOUT_OVERRIDE);
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code

@@ -31,6 +31,7 @@ class Problem10 extends Problem_Abstract
      */
     public function __construct()
     {
+        parent::__construct();
         set_time_limit(self::PROBLEM_TIMEOUT_OVERRIDE);
     }
 
