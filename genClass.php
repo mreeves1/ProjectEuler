@@ -36,7 +36,6 @@ if (isset($argv) && isset($argv[1]) && is_numeric($argv[1])) {
             if ($divElem->getAttribute('class') == "problem_content" && $divElem->getAttribute('role') == "problem") {
                 $projectDescLong = trim($divElem->nodeValue);
                 $projectDescLong = str_replace("\n", "\n * ", $projectDescLong);
-		// echo $projectDescLong."<br/>\n";
 	    }
 
         }
@@ -44,7 +43,14 @@ if (isset($argv) && isset($argv[1]) && is_numeric($argv[1])) {
         $output = str_replace(TOKEN_PROB_NUMBER, $projectNumber, $input);
         $output = str_replace(TOKEN_PROB_DESC_SHORT, $projectDescShort, $output);
         $output = str_replace(TOKEN_PROB_DESC_LONG, $projectDescLong, $output);
-        echo $output; 
+        $writeResult = file_put_contents($newFile, $output);
+        if ($writeResult === false) {
+            // echo $output; 
+            echo "Write of Problem # ".TOKEN_PROB_NUMBER ." to " . $newFile . " failed!\n";
+        } else {
+            echo "Write of Problem # ".TOKEN_PROB_NUMBER ." to " . $newFile . " succeeded!\n";
+
+        }
     }
 
 } else {
