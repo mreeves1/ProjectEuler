@@ -78,13 +78,33 @@ class Problem19 extends Problem_Abstract
         // cheat on init conditions
         // per rules 1900 has 365 days (leap year century not divisible by 400)
         // 52 * 7 = 364, 365 - 364 = 1 left ovr day
-        $leftOverDays = if ($yearStart == 1901) ? 1 : die("Unknown leftover day count");
-        $sundayCount = countSundays($currentYear, $yearEnd, 0, $leftOverDays);
+        $leftOverDays = ($yearStart == 1901) ? 1 : die("Unknown leftover day count");
+        $sundayCount = $this->countSundays($currentYear, $yearEnd, 0, $leftOverDays);
         return $sundayCount;
     }
 
     private function countSundays($currentYear, $yearEnd, $sundayCount, $leftOverDays) {
-
-        return $sundayCount;
+        if ($currentYear % 400 == 0) {
+            $daysInYear = 366;
+        } elseif ($currentYear % 100 == 0) {
+            $daysInYear = 365;
+        } elseif ($currentYear % 4 == 0) {
+            $daysInYear = 366;
+        } else {
+            $daysInYear = 365;
+        }
+        echo $currentYear.": has ".$daysInYear." days and "; // debug
+        // range can be 365 to 372
+        $days = $daysInYear + $leftOverDays; 
+        $currentSundayCount = floor($days/7);
+        echo "has ".$currentSundayCount." sundays.\n"; // debug
+        $newLeftOverDays = $days - ($currentSundayCount * 7);
+        $newSundayCount = $sundayCount + $currentSundayCount;
+        $newCurrentYear = $currentYear + 1;
+        if ($currentYear == $yearEnd) {
+            return $newSundayCount;
+        } else {
+            return $this->countSundays($newCurrentYear, $yearEnd, $newSundayCount, $newLeftOverDays); 
+        }
     }
 }
