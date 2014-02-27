@@ -28,8 +28,8 @@ class Problem17 extends Problem_Abstract
      * Description of input
      * @const string INPUT
      */
-    const INPUT = 5; // Test value, should return 19
-    // const INPUT = 1000;
+    // const INPUT = 5; // Test value, should return 19
+    const INPUT = 1000;
   
     private $_valueWordMap = array(
                           1 => "one",
@@ -57,10 +57,10 @@ class Problem17 extends Problem_Abstract
                           50 => "fifty",
                           60 => "sixty",
                           70 => "seventy",
-                          80 => "eigthy",
+                          80 => "eighty",
                           90 => "ninety",
                           100 => "hundred",
-                          1000 => "thousand",
+                          1000 => "one thousand", // mild laziness
                     );
 
     /**
@@ -96,8 +96,11 @@ class Problem17 extends Problem_Abstract
     private function findNumberLetterCountSum($upperBound)
     {
         $sum = 0;
-        for($i = 1; $i <= $upperBound; $i++) {
-            $sum += $this->findNumberLetterCount($i);
+        for ($i = 1; $i <= $upperBound; $i++) {
+            $letterCount = $this->findNumberLetterCount($i);
+            echo " = ";
+            echo $i."(".$letterCount.")\n";
+            $sum += $letterCount;
         }
         return $sum;
     }
@@ -105,8 +108,46 @@ class Problem17 extends Problem_Abstract
     private function findNumberLetterCount($number)
     {
         $letterCount = 0;
-        if (isset($this->_valueWordMap[$number])) {
-            $letterCount += $this->stripCount($this->_valueWordMap[$number]);
+        $digits = str_split($number);
+       
+        if ($number >= 100 && $number < 200) { // annoying "one" prefix case  
+            $letterCount += $this->findNumberLetterCount(1);
+            $count = $this->stripCount($this->_valueWordMap[100]);
+            $letterCount += $count;
+            echo $this->_valueWordMap[100] . "(+" . $count . "), ";
+            if ($number > 100) {
+                $letterCount += 3; // this is for "and"                                                                            
+                echo "and(+3), ";              
+                $letterCount += $this->findNumberLetterCount($number - 100);
+            }
+        }
+        else if (isset($this->_valueWordMap[$number])) {
+            $count = $this->stripCount($this->_valueWordMap[$number]);
+            $letterCount += $count;
+            echo $this->_valueWordMap[$number] . "(+" . $count . "), ";
+        }
+        else {
+            $digits = str_split($number);
+            if ($number <= 99) {
+                $tensNumber = (int) $digits[0]."0";
+                $onesNumber = (int) $digits[1];
+                $letterCount += $this->findNumberLetterCount($tensNumber);
+                $letterCount += $this->findNumberLetterCount($onesNumber);
+            } elseif ($number % 100 == 0) {
+                $letterCount += $this->findNumberLetterCount($number/100);
+                $count = $this->stripCount($this->_valueWordMap[100]);
+                $letterCount += $count;
+                echo $this->_valueWordMap[100] . "(+" . $count . "), ";
+            } elseif ($number <= 999) {
+                $hundredsNumber = (int) ($digits[0]."00");
+                $tensNumber = (int) ($digits[1].$digits[2]);
+                $letterCount += $this->findNumberLetterCount($hundredsNumber);
+                $letterCount += 3; // this is for "and"
+                echo "and(+3), ";
+                $letterCount += $this->findNumberLetterCount($tensNumber);
+            } else {
+                die("This program only supports numbers <= 1000");
+            }
         }
         return $letterCount;
     }
