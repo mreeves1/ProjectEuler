@@ -46,9 +46,9 @@ if (isset($argv) && isset($argv[1]) && is_numeric($argv[1])) {
         $writeResult = file_put_contents($newFile, $output);
         if ($writeResult === false) {
             // echo $output; 
-            echo "Write of Problem # ".TOKEN_PROB_NUMBER ." to " . $newFile . " failed!\n";
+            echo "Write of Problem # ".$projectNumber ." to " . $newFile . " failed!\n";
         } else {
-            echo "Write of Problem # ".TOKEN_PROB_NUMBER ." to " . $newFile . " succeeded!\n";
+            echo "Write of Problem # ".$projectNumber ." to " . $newFile . " succeeded!\n";
 
         }
     }
