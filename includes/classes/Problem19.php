@@ -42,6 +42,22 @@ class Problem19 extends Problem_Abstract
      */
     const INPUT_END = 2000;
 
+    private $monthsMap = array(
+                              "jan" => 31,
+                              "feb" => 28,
+                              "mar" => 31,
+                              "apr" => 30,
+                              "may" => 31,
+                              "jun" => 30,
+                              "jul" => 31,
+                              "aug" => 31,
+                              "sep" => 30,
+                              "oct" => 31,
+                              "nov" => 30,
+                              "dec" => 31
+                              );
+    
+    
     /**
      * Override default timeout of 60 seconds
      */
@@ -73,38 +89,44 @@ class Problem19 extends Problem_Abstract
      *
      * @return int description
      */
-    private function countSundaysinRange($yearStart, $yearEnd){
+    private function countSundaysinRange($yearStart, $yearEnd)
+    {
         $sundayCount = 0;
         // cheat on init conditions
         // per rules 1900 has 365 days (leap year century not divisible by 400)
-        // 52 * 7 = 364, 365 - 364 = 1 left ovr day
+        // 52 * 7 = 364, 365 - 364 = 1 left over day, so 
         $leftOverDays = ($yearStart == 1901) ? 1 : die("Unknown leftover day count");
-        $sundayCount = $this->countSundays($currentYear, $yearEnd, 0, $leftOverDays);
+        $sundayCount = $this->countSundays($yearStart, $yearEnd, 0, $leftOverDays); // initial conditions
         return $sundayCount;
     }
 
-    private function countSundays($currentYear, $yearEnd, $sundayCount, $leftOverDays) {
-        if ($currentYear % 400 == 0) {
-            $daysInYear = 366;
-        } elseif ($currentYear % 100 == 0) {
-            $daysInYear = 365;
-        } elseif ($currentYear % 4 == 0) {
-            $daysInYear = 366;
-        } else {
-            $daysInYear = 365;
+    private function countSundays($currentYear, $yearEnd, $sundayCount, $leftOverDays)
+    {
+        foreach ($this->monthsMap as $month => $days) {
+            if ($month == 'feb' && $currentYear % 400 == 0) {
+                $days++;
+            } elseif ($month == 'feb' && $currentYear % 100 != 0 && $currentYear % 4 == 0) {
+                $days++;
+            } else {
+                // not leap year
+            }    
+            echo $month.", ".$currentYear." has ".$days." days"; // debug
+            if ($leftOverDays == 6) {
+                $sundayCount++;
+                echo " Sunday found on the first!\n"; // debug
+            } else {
+                echo "\n";
+            }
+            $totalDays = $days + $leftOverDays;
+            $weekCount = floor($totalDays/7);
+            $leftOverDays = $totalDays - ($weekCount * 7);
         }
-        echo $currentYear.": has ".$daysInYear." days and "; // debug
-        // range can be 365 to 372
-        $days = $daysInYear + $leftOverDays; 
-        $currentSundayCount = floor($days/7);
-        echo "has ".$currentSundayCount." sundays.\n"; // debug
-        $newLeftOverDays = $days - ($currentSundayCount * 7);
-        $newSundayCount = $sundayCount + $currentSundayCount;
+
         $newCurrentYear = $currentYear + 1;
         if ($currentYear == $yearEnd) {
-            return $newSundayCount;
+            return $sundayCount;
         } else {
-            return $this->countSundays($newCurrentYear, $yearEnd, $newSundayCount, $newLeftOverDays); 
+            return $this->countSundays($newCurrentYear, $yearEnd, $sundayCount, $leftOverDays); 
         }
     }
 }
