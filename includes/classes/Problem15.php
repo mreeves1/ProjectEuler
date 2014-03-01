@@ -34,7 +34,7 @@ class Problem15 extends Problem_Abstract
      */
     // const INPUT = 2; // Test - Should return 6
     // const INPUT = 3; // Let's figure out the mathematical relationship! :-)
-    const INPUT = 6; // Let's figure out the mathematical relationship! :-)
+    const INPUT = 12; // Let's figure out the mathematical relationship! :-)
     // const INPUT = 20; // Problem value
 
     /** Store the resulting routes in an array */
@@ -102,7 +102,7 @@ class Problem15 extends Problem_Abstract
         $yNew = $y + 1;
         if ($xNew > $bounds && $yNew > $bounds) {
             $this->pathCount++;
-            echo implode("->",$path)."\n";
+            // echo implode("->",$path)."\n"; // debug
         }
         else {
             if ($yNew <= $bounds){
