@@ -32,8 +32,10 @@ class Problem15 extends Problem_Abstract
      * 
      * @const int INPUT
      */
-    const INPUT = 2;
-    const INPUT = 2;
+    // const INPUT = 2; // Test - Should return 6
+    // const INPUT = 3; // Let's figure out the mathematical relationship! :-)
+    const INPUT = 6; // Let's figure out the mathematical relationship! :-)
+    // const INPUT = 20; // Problem value
 
     /** Store the resulting routes in an array */
     // private $paths = array();
@@ -61,7 +63,26 @@ class Problem15 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->countRoutes(self::INPUT);
+        for ($i = 2; $i <= self::INPUT; $i++) {
+            $this->pathCount = 0; // reset
+            echo "\n================================================\n";
+            echo "Boundaries: ".$i."\n";
+            echo "Routes Count: ".$this->countRoutes($i)."\n";
+        }
+        // Solution is this: (2*n)!/(n!)^2
+        // I need to research binomial coefficients
+        // http://www.robertdickau.com/manhattan.html
+        // My program is right but there is a combinatorial explosion that makes it too slow to compute a 20x20 grid
+        return $this->fact(2*20)/(pow($this->fact(20),2));
+    }
+
+    private function fact($x) {
+       $result = 1;
+       while ($x > 0) {
+           $result *= $x;
+           $x--;
+       }
+       return $result;
     }
 
     /**
@@ -72,11 +93,28 @@ class Problem15 extends Problem_Abstract
      * @return int Number of routes
      */
     private function countRoutes($bounds){
-        $this->followPath(0, 0, $bounds);
+        $this->followPath(0, 0, $bounds, array("0,0"));
         return $this->pathCount;
     }
 
-    private function followPath($x, $y, $bounds) {
-
+    private function followPath($x, $y, $bounds, $path) {
+        $xNew = $x + 1;
+        $yNew = $y + 1;
+        if ($xNew > $bounds && $yNew > $bounds) {
+            $this->pathCount++;
+            echo implode("->",$path)."\n";
+        }
+        else {
+            if ($yNew <= $bounds){
+                $pathD = $path;
+                array_push($pathD, "$x,$yNew");
+                $this->followPath($x, $yNew, $bounds, $pathD);
+            }
+            if ($xNew <= $bounds){
+                $pathR = $path;
+                array_push($pathR, "$xNew,$y");
+                $this->followPath($xNew, $y, $bounds, $pathR);
+            }    
+        }
     }
 }
