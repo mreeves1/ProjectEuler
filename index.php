@@ -24,8 +24,7 @@ include_once('includes/init.php');
         <a href="http://projecteuler.net/problems">Project Euler</a> problems <strong>Rock!</strong>
         <ul>
         <?php
-            // for ($i = 12; $i < 13; $i++) {
-            for ($i = 20; $i <= 20; $i++) {
+            for ($i = 22; $i <= 22; $i++) {
                 $className = 'Problem'.$i;
                 $problem = new $className();
                 echo '<li>The answer to <a href="http://projecteuler.net/problem='.$i.'" target="_blank">';
