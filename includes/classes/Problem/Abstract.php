@@ -39,6 +39,12 @@ abstract class Problem_Abstract
         $this->t2 = microtime(true);
         $totalTime = $this->t2 - $this->t1;
         echo "Took ".round($totalTime, 4)." seconds<br/>\n";
+        echo "Used ".round((memory_get_peak_usage()/(pow(1024,2))),2)." megabytes of memory<br/>\n";
+    }
+
+    protected function overrideTimeoutAndMemoryLimit($time, $memory = '64M') {
+        set_time_limit($time);
+        ini_set('memory_limit', $memory);
     }
 
     // TODO: Add timer, server and logging functionality
