@@ -26,15 +26,18 @@ class Problem24 extends Problem_Abstract
     */
 
     /**
-     * Project Euler says each problem should take no more than 1 minute. If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method
+     * Project Euler says each problem should take no more than 1 minute. 
+     * If your computer is slow make this larger.
+     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
+     * takes for the script to timeout
      */
     const TIMEOUT_OVERRIDE = 60;
-    
+
     /**
      * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
      * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method
+     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
+     * the script is allowed to consume.
      */
     const MEMORY_OVERRIDE = '1024M';
 
