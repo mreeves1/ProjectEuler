@@ -27,7 +27,7 @@ class Problem81 extends Problem_Abstract
      * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
      * takes for the script to timeout
      */
-    const TIMEOUT_OVERRIDE = 60;
+    const TIMEOUT_OVERRIDE = 360;
 
     /**
      * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
@@ -38,11 +38,20 @@ class Problem81 extends Problem_Abstract
     const MEMORY_OVERRIDE = '64M';
 
     /**
-     * Description of input
+     * File with 5000+ first names (comma delimited and quoted)
      * @const string INPUT
      */
-    const INPUT = '';
+    const INPUT_FILE = 'files/problem81_matrix_problem.txt';
+    // const INPUT_FILE = 'files/problem81_matrix_test.txt'; // Test case where result should be 2427
 
+    private $minPathSum = 2147483647; // arbitrarily large init value = max 32 bit int 
+ 
+    private $path_counter = 0; 
+   
+    private $discard_counter = 0; 
+
+    private $matrix = array();
+ 
     /**
      * Override default timeout of 60 seconds
      */
@@ -50,7 +59,7 @@ class Problem81 extends Problem_Abstract
     {
         parent::__construct(); 
 
-        // $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
+        $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
 
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code
@@ -65,7 +74,7 @@ class Problem81 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        return $this->findMinimalPathSum(self::INPUT_FILE);
     }
 
     /**
@@ -75,8 +84,49 @@ class Problem81 extends Problem_Abstract
      *
      * @return int description
      */
-    private function findSomething($number){
+    private function findMinimalPathSum($input_file){
+        $this->initMatrix($input_file);
+        $this->traverseMatrix(0, 0, 0);
+        return $this->minPathSum;
+    }
 
-        return;
+    private function initMatrix($input_file) {
+        $fh = fopen($input_file, "r");
+        $y = 0;
+        while (($row = fgetcsv($fh, 0, ",", "'")) !== false) {
+            $this->matrix[$y] = $row;
+            $y++;
+        }
+        // echo var_export($this->matrix, true); // debug
+    }
+
+    private function getMatrix() {
+        return $this->matrix;
+    }
+
+    private function traverseMatrix($x, $y, $sum) {
+        $matrix = $this->getMatrix();
+        $sum += $matrix[$y][$x];
+        if ($sum > $this->minPathSum) {
+            $this->discard_counter++;
+            if ($this->discard_counter % 100000 == 0) {
+                echo $this->discard_counter . " possible paths discarded so far.\n";
+            }
+            return; // We can never have a better answer!
+        }
+        if (!isset($matrix[$y+1]) && !isset($matrix[$x+1])) { // end condition
+            $this->path_counter++;
+            if ($this->path_counter % 100000 == 0) {
+                echo $this->path_counter . " paths found so far.\n";
+            }
+            $this->minPathSum = ($sum < $this->minPathSum) ? $sum : $this->minPathSum;
+        } else {
+            if (isset($matrix[$y+1])) {
+                $this->traverseMatrix($x, $y+1, $sum);
+            }
+            if (isset($matrix[$x+1])) {
+                $this->traverseMatrix($x+1, $y, $sum);
+            }
+        } 
     }
 }
