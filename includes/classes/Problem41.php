@@ -16,27 +16,19 @@
 class Problem41 extends Problem_Abstract
 {
     /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
-     */
-    const TIMEOUT_OVERRIDE = 300;
-
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '512M';
-
-    /**
-     * Description of input
+     * Largest number to check
+     *
+     * This is a bit dodgy and a "gotcha". Made me try again and again to optimize my algos! :-/
+     * Due to the "Divisibility rule" we can deduce that neither 987654321 nor 87654321 
+     * should be our upper bound. This is because 9+8+7+6+5+4+3+2+1 = 45 which is divisible by 3
+     * and 8+7+6+5+4+3+2+1 = 36 which is also divisible by 3.
+     *
+     * @link http://en.wikipedia.org/wiki/Divisibility_rule
+     *
      * @const int UPPER_BOUND
      */
-    const UPPER_BOUND = 987654321; // Problem value
-    # const UPPER_BOUND = 2200; // Testing value
+    const UPPER_BOUND = 7654321; // Problem value
+    # const UPPER_BOUND = 2201; // Testing value, answer is 2143
 
     /**
      * Override default timeout of 60 seconds
@@ -44,8 +36,6 @@ class Problem41 extends Problem_Abstract
     public function __construct()
     {
         parent::__construct(); 
-
-        $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
 
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code
@@ -64,55 +54,84 @@ class Problem41 extends Problem_Abstract
     }
 
     /**
-     * Find "Something".
+     * Find Largest Pandigital Prime.
      *
-     * @param string $number description
+     * @param string $upper_bound Largest number to check
      *
-     * @return int description
+     * @return int Largest pandigital prime
      */
     private function findLargestPandigitalPrime($upper_bound){
-        $max = 0;
-        for ($i = 1; $i <= $upper_bound; $i++){
-            if ($this->isPrime($i) && $this->isPandigital($i)) {
-                // echo $i . " is prime and pandigital.\n"; // debug         
-                $max = ($i > $max) ? $i : $max;
+        $this->initPrimes(200);
+
+        $test_counter = 0;
+        for ($i = $upper_bound; $i > 1; $i -= 2){
+            if ($this->isPandigital($i) && $this->isPrime($i)) {
+                return $i;
             }
         }
-        return $max; 
     }
 
+    /** 
+     * Used to generate a sieve of erastosthenes to speed up subsequent isPrime calls
+     *
+     * @link http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
+     */ 
+    private function initPrimes($n) {
+        for ($i = 3; $i <= $n; $i = $i + 2) {
+            // effectively caches some prime values to speed up our future calcs 
+            $this->isPrime($i);
+        } 
+    }
+
+    /**
+     * Test for Prime-ness
+     *
+     * @param string $n Number to test for primality
+     *
+     * @return boolean Is number prime?
+     */
     private function isPrime($n) {
         static $primes = array(2, 3);
         if ($n === 1) {
             return false;
-        } elseif ($n === 2) {
+        } elseif ($n <= 3) {
             return true;
+        } elseif ($n % 2 == 0 || $n % 3 == 0) {
+            return false;
         } else {
-            foreach ($primes as $prime) {
-                if ($n % $prime === 0) {
+            foreach ($primes as $prime) { // Use sieve
+                if ($n > $prime && $n % $prime == 0) {
                     return false;
                 }
-                if ($prime > sqrt($n)) {
-                    break;
+            }
+            // TODO: Come back and understand this prime test algo better
+            for ($i = 5; $i <= sqrt($n) + 1; $i += 6) { 
+                if ($n % $i == 0 || $n % ($i + 2) == 0) {
+                    return false;
                 }
             }
-            $primes[] = $n;
-            // echo $n." is prime\n";
+            // Store in sieve
+            if ($n < 300 && !in_array($n, $primes)) {
+                $primes[] = $n;
+            }
             return true;
         }
     }
 
+    /**
+     * Test for pandigital-ness
+     * e.g. when a numbers digits are ordered they go from 1 to n where n is the number of digits in the number
+     *
+     * @param string $n Number to check
+     *
+     * @return boolean Is number pandigital?
+     */
     private function isPandigital($n) {
         $digits = str_split($n);
         sort($digits);
-        $test_range = range(1, count($digits));
-        // if ($n == 2143) {
-        //    var_dump($digits);
-        //    var_dump($test_range);
-        // }
-        return ($digits == $test_range);
+        $digits_str = implode("", $digits);
+        $test_full = "123456789";
+        $test_str = substr($test_full, 0, strlen($digits_str));
+        return (strcmp($test_str, $digits_str) === 0);
     }
-
- 
-
 }
