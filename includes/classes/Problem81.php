@@ -86,8 +86,9 @@ class Problem81 extends Problem_Abstract
      */
     private function findMinimalPathSum($input_file){
         $this->initMatrix($input_file);
-        $this->traverseMatrix(0, 0, 0);
-        return $this->minPathSum;
+        $maxDim = count($this->getMatrix());
+        return $this->traverseMatrix($maxDim - 1, $maxDim - 1, 0);
+        // return $this->minPathSum;
     }
 
     private function initMatrix($input_file) {
@@ -106,26 +107,21 @@ class Problem81 extends Problem_Abstract
 
     private function traverseMatrix($x, $y, $sum) {
         $matrix = $this->getMatrix();
-        $sum += $matrix[$y][$x];
-        if ($sum > $this->minPathSum) {
-            $this->discard_counter++;
-            if ($this->discard_counter % 100000 == 0) {
-                echo $this->discard_counter . " possible paths discarded so far.\n";
-            }
-            return; // We can never have a better answer!
+        if (isset($matrix[$y]) && isset($matrix[$y][$x])) {
+            $sum += $matrix[$y][$x];
+            echo "Coordinates (".$x.",".$y."), Sum is now ".$sum."\n";
         }
-        if (!isset($matrix[$y+1]) && !isset($matrix[$x+1])) { // end condition
-            $this->path_counter++;
-            if ($this->path_counter % 100000 == 0) {
-                echo $this->path_counter . " paths found so far.\n";
-            }
-            $this->minPathSum = ($sum < $this->minPathSum) ? $sum : $this->minPathSum;
+        if ($x == 0 && $y == 0) { // end condition
+            return $sum;
         } else {
-            if (isset($matrix[$y+1])) {
-                $this->traverseMatrix($x, $y+1, $sum);
-            }
-            if (isset($matrix[$x+1])) {
-                $this->traverseMatrix($x+1, $y, $sum);
+            $newY = $y > 0 ? $matrix[$y-1][$x] : PHP_INT_MAX;
+            $newX = $x > 0 ? $matrix[$y][$x-1] : PHP_INT_MAX;
+            echo "new possibles: (".$newX.",".$newY.")\n";
+
+            if ($newY < $newX) {
+                return $this->traverseMatrix($x, $y-1, $sum);
+            } else {
+                return $this->traverseMatrix($x-1, $y, $sum);
             }
         } 
     }
