@@ -17,28 +17,12 @@
 class Problem35 extends Problem_Abstract
 {
     /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
-     */
-    const TIMEOUT_OVERRIDE = 60;
-
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '64M';
-
-    /**
      * Description of input
      * @const string INPUT
      */
     // const UPPER_BOUND = 100; // Test value, answer is 13
-    const UPPER_BOUND = 10000; // Test value
-    // const UPPER_BOUND = 1000000; // Problem value
+    // const UPPER_BOUND = 10000; // Test value
+    const UPPER_BOUND = 1000000; // Problem value
 
     /**
      * Override default timeout of 60 seconds
@@ -46,8 +30,6 @@ class Problem35 extends Problem_Abstract
     public function __construct()
     {
         parent::__construct(); 
-
-        // $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
 
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code
@@ -66,41 +48,45 @@ class Problem35 extends Problem_Abstract
     }
 
     /**
-     * Find "Something".
+     * Count "Circular Primes" smaller than an upper bound
      *
-     * @param string $number description
+     * @param string $upper_bound Test up to this number
      *
-     * @return int description
+     * @return int How many circular primes under $upper_bound?
      */
     private function countCircularPrimes($upper_bound){
-        $prime_count = array(); // the key will be the prime ordered and the value will be a count
+        $circular_primes = array(); 
         for ($i = 1; $i < $upper_bound; $i++) {
-            if ($this->isPrime($i)) {
-                // echo $i . " is prime.\n";
-                $a = str_split((string) $i);
-                rsort($a); // reverse sort to prevent leading zeroes
-                $k = implode("", $a);
-                if (isset($prime_count[$k])) {
-                    $prime_count[$k] = $prime_count[$k] + 1;
-                } else {
-                    $prime_count[$k] = 1;
+            if ($this->isPrime($i) && !in_array($i, $circular_primes)) {
+                $possible_circular_primes = array($i);
+                $a = (string) $i;
+                $cnt = strlen($a);
+                $j = 1;
+                while ($j < $cnt) {
+                    // pop the last letter off and move to the front
+                    $a_front = substr($a, 0, -1);
+                    $a_last = substr($a, -1);
+                    $a = $a_last.$a_front; 
+                    if ($this->isPrime((int)$a)) {
+                        $possible_circular_primes[] = (int)$a;
+                    } else {
+                        break;
+                    } 
+                    $j++;
+                }
+                if (count($possible_circular_primes) == $cnt) {
+                    // echo "Circular primes added: "; // Debug
+                    // echo implode(",", $possible_circular_primes)."\n"; // Debug
+                    $circular_primes = array_merge($circular_primes, $possible_circular_primes);
                 }
             }
         }
-        ksort($prime_count);
-
-        $circular_prime_count = 0;
-        arsort($prime_count);
-        echo var_export($prime_count, true);
-        foreach ($prime_count as $prime => $count) {
-            $test_count = $this->fact(strlen((string) $prime));
-            if ($test_count == $count || $prime == 11) { // wacky edge case 11 - may need to refine thiss
-                $circular_prime_count += $count;
-                echo $prime . " is a circular prime (sorted) with ".$count." primes \n";
-            }
-        }
-
-        return $circular_prime_count;
+        
+        $circular_primes = array_unique($circular_primes);
+        asort($circular_primes);
+        // echo "\nAll Circular Primes under $upper_bound:\n"; // Debug
+        // echo var_export($circular_primes)."\n"; // Debug
+        return count($circular_primes);
     }
 
     /**
