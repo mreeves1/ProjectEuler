@@ -90,6 +90,7 @@ class Problem35 extends Problem_Abstract
         ksort($prime_count);
 
         $circular_prime_count = 0;
+        arsort($prime_count);
         echo var_export($prime_count, true);
         foreach ($prime_count as $prime => $count) {
             $test_count = $this->fact(strlen((string) $prime));
