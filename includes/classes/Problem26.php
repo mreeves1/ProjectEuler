@@ -27,19 +27,12 @@
  */
 class Problem26 extends Problem_Abstract
 {
-
-    /**
-     * Project Euler says each problem should take no more than 1 minute. If your computer is slow make this larger.
-     * $const int PROBLEM_TIMEOUT Used with set_timeout_limit to throw a timeout if problem computation takes too long.
-     */
-    const PROBLEM_TIMEOUT_OVERRIDE = 60;
-
     /**
      * Description of input
      * @const string INPUT
      */
-    // const INPUT = 1000; // Problem Value;
-    const INPUT = 10; // Test Value - Should be 6;
+    const INPUT = 1000; // Problem Value;
+    // const INPUT = 10; // Test Value - Answer should be 7;
 
     /**
      * Override default timeout of 60 seconds
@@ -47,10 +40,9 @@ class Problem26 extends Problem_Abstract
     public function __construct()
     {
         parent::__construct(); 
-        set_time_limit(self::PROBLEM_TIMEOUT_OVERRIDE);
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
+            die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
         }
     }
 
@@ -65,34 +57,51 @@ class Problem26 extends Problem_Abstract
     }
 
     /**
-     * Find "Something".
+     * Find the denominator D with the longest recurring cycle
      *
-     * @param string $number description
+     * @param string $max_denominator Largest d to test
      *
-     * @return int description
+     * @return int denominator D
      */
-    private function findDenominatorWithLongestRecurringCycle($maxDenominator){
-        $maxCycle = 0;
-        $maxD = 0;
-        for ($i = 2; $i <= $maxDenominator; $i++) {
-            $testNumber = 1/$i;
-            $currentCycle = $this->findCycle($testNumber);
-            if ($currentCycle > $maxCycle) {
-                $maxD = $i;
-                $maxCycle = $currentCycle;
-            }
-            echo "denominator: $i, test number: $testNumber, current cycle: $currentCycle, max cycle: $maxCycle, max d: $maxD \n"; 
+    private function findDenominatorWithLongestRecurringCycle($max_denominator)
+    {
+        $max_denom = 0;
+        $max_digits = 2000; // Trial and error to figure out how many digits we need to test
+        $d_cycle_map = array(); 
+        for ($i = 2; $i <= $max_denominator; $i++) {
+            $x = bcdiv(1, (string)$i, $max_digits);
+            // echo $x."\n"; // debug
+            $cycle_length = $this->findCycle($x);
+            $d_cycle_map[$i] = $cycle_length;
         }
-        return $maxD;
+        arsort($d_cycle_map);
+        // echo var_export($d_cycle_map, true)."\n"; // debug
+        $answer_count = reset($d_cycle_map);
+        $answer_d = key($d_cycle_map);
+        // echo "D is $answer_d with a count of $answer_count.\n"; // debug
+        return ($answer_d);
+
     }
 
-    private function findCycle($num) {
-        $digits = substr((string)$num, 2, -1); // get rid of 0. and last digit which might be rounded up
-        $maxMatch = 0;
-        $testCycle = '';
-        foreach ($digits as $digit) {
-            $testCycle .= (string) $digit;
-
+    private function findCycle($num) 
+    {
+        $haystack = substr((string)$num, 2, -1); // get rid of 0. and last digit which might be rounded up
+        $pseudo_d = round(1/$num,0);
+        $match_limit = 1000;
+        $max_match = 0;
+        $max_needle = "";
+        for($start = 0; $start < 1; $start ++) { // premature optimization? Should we deal with extra leading digits that don't repeat?
+            for ($end = 1; $end < $match_limit; $end++) {
+                $needle = substr($haystack, $start, $end);
+                $len = $end - $start;
+                $next = substr($haystack, $start + $end, $end);
+                if (($needle == $next) && ($len > $max_match) && (strlen($needle) > 1)) { // The strlen check is a bit of a hack to prevent a "greedy match" with repeating digits 
+                    $max_match = $len;
+                    $max_needle = $needle;
+                    break;
+                }  
+            }
         }
+        return $max_match;
     }
 }
