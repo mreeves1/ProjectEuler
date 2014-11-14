@@ -18,30 +18,12 @@
  */
 class Problem31 extends Problem_Abstract
 {
-
-    /**
-     * Project Euler says each problem should take no more than 1 minute. If your computer is slow make this larger.
-     * $const int PROBLEM_TIMEOUT Used with set_timeout_limit to throw a timeout if problem computation takes too long.
-     */
-    const PROBLEM_TIMEOUT_OVERRIDE = 60;
-
-    /**
-     * Description of input
-     * @const string INPUT
-     */
-    const INPUT = '';
-
     /**
      * Override default timeout of 60 seconds
      */
     public function __construct()
     {
         parent::__construct(); 
-        set_time_limit(self::PROBLEM_TIMEOUT_OVERRIDE);
-        if (!extension_loaded('bcmath')) {
-            // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
-        }
     }
 
     /**
@@ -51,18 +33,31 @@ class Problem31 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        $coins = array(200,100,50, 20, 10, 5, 2, 1);
+        $money = 200; // aka 2 english pounds
+ 
+        return $this->countChange($money, $coins);
     }
 
     /**
-     * Find "Something".
+     * Count how many different ways you can make change with this much money and these values of coins
      *
-     * @param string $number description
+     * @param int $money Amount of money in cents that we will make change from
+     * @param array $coins Array of coin values we can use to make change
      *
-     * @return int description
+     * @return int Number of different ways we can make change
      */
-    private function findSomething($number){
 
-        return;
+    private function countChange($money, $coins) {
+        // echo "money: $money, coins: ".implode(",", $coins)."\n"; // debug  
+        if ($money == 0) {
+            return 1;
+        } elseif (!empty($coins) && $money > 0) {
+            $coins_orig = $coins; // Original set of coins
+            $coin_last = array_pop($coins); // Now coins has had the last (smallest) element popped off
+            return $this->countChange($money - $coin_last, $coins_orig) + $this->countChange($money, $coins);
+        } else {
+            return 0;
+        }
     }
 }
