@@ -22,16 +22,10 @@ class Problem38 extends Problem_Abstract
 {
 
     /**
-     * Project Euler says each problem should take no more than 1 minute. If your computer is slow make this larger.
-     * $const int PROBLEM_TIMEOUT Used with set_timeout_limit to throw a timeout if problem computation takes too long.
-     */
-    const PROBLEM_TIMEOUT_OVERRIDE = 60;
-
-    /**
      * Description of input
      * @const string INPUT
      */
-    const INPUT = '';
+    const UPPER_BOUND = 1000000;
 
     /**
      * Override default timeout of 60 seconds
@@ -39,11 +33,6 @@ class Problem38 extends Problem_Abstract
     public function __construct()
     {
         parent::__construct(); 
-        set_time_limit(self::PROBLEM_TIMEOUT_OVERRIDE);
-        if (!extension_loaded('bcmath')) {
-            // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
-        }
     }
 
     /**
@@ -53,18 +42,54 @@ class Problem38 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        return $this->findLargestPandigitalMultiple(self::UPPER_BOUND);
     }
 
     /**
-     * Find "Something".
+     * Find findLargestPandigitalMultiple
      *
-     * @param string $number description
+     * @param string $number_max
      *
-     * @return int description
+     * @return int Largest Pandigital Product
      */
-    private function findSomething($number){
+    private function findLargestPandigitalMultiple($number_max)
+    {
+        $largest_pandigital = 0;
+        for ($i = 9; $i <= $number_max; $i++) {
+            $possible_pd = $this->getPandigitalProduct($i);
+            if ($possible_pd && $possible_pd > $largest_pandigital) {
+                $largest_pandigital = $possible_pd;
+            }
+        }
+        return $largest_pandigital;
+    }
 
-        return;
+    /**
+     * Find getPandigitalMultiple
+     *
+     * @param string $number
+     *
+     * @return int Pandigital Product or false (a bit ghetto...)
+     */
+    private function getPandigitalProduct($number) 
+    {
+        $n = 10; // I don't think we need any n that is larger
+        $goal = '987654321';
+        $solution = '';
+        for ($i = 1; $i <= $n; $i++) {
+            $tmp = (string) ($number * $i);
+            $solution .= $tmp;
+            $sol_array = str_split($solution);
+            arsort($sol_array); // stupid leading zeroes means reverse sorting
+            $solution_sorted = implode("", $sol_array); // sorted
+            if ($solution_sorted == $goal) {
+                // echo "num = $number, i = $i, solution = $solution\n"; // debug
+                return (int)$solution;
+            }
+            if (strlen($solution) > 9) {
+                return false;
+            }
+        }
+        return false;        
     }
 }
