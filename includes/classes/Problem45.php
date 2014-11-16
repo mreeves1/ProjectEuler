@@ -21,26 +21,10 @@
 class Problem45 extends Problem_Abstract
 {
     /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
+     * Largest n we will generate Triangle, Pentagonal and Hexagonal numbers for
+     * @const int UPPER_BOUND
      */
-    const TIMEOUT_OVERRIDE = 60;
-
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '64M';
-
-    /**
-     * Description of input
-     * @const string INPUT
-     */
-    const INPUT = '';
+    const UPPER_BOUND = 1000000;
 
     /**
      * Override default timeout of 60 seconds
@@ -48,13 +32,6 @@ class Problem45 extends Problem_Abstract
     public function __construct()
     {
         parent::__construct(); 
-
-        // $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
-
-        if (!extension_loaded('bcmath')) {
-            // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
-        }
     }
 
     /**
@@ -64,18 +41,36 @@ class Problem45 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        return $this->findNextTriPenHexNumber(self::UPPER_BOUND);
     }
 
     /**
-     * Find "Something".
+     * Find the next number > 40755 that is a Triangle, Pentagonal and Hexagonal number.
      *
-     * @param string $number description
+     * @param int $upper_bound Largest N that we will calculate a Triangle Number
      *
-     * @return int description
+     * @return int Next Triangle, Pentagonal, Hexagonal Number
      */
-    private function findSomething($number){
+    private function findNextTriPenHexNumber($upper_bound)
+    {
+        $hash = array();
+        // $n_start = 2; // test case, should return 40755
+        $n_start = 144; // problem case
+        for ($n = $n_start; $n <= $upper_bound; $n++) {
+            $t = $n * ($n + 1) / 2; // triangle number equation
+            $p = $n * (3 * $n - 1) / 2; // pentagonal number equation
+            $h = $n * (2 * $n - 1); // hexagonal number equation
 
-        return;
+            if (isset($hash[$t]) && $hash[$t] > 1) {
+                return $t;
+            }
+            $hash[$h] = 1; // We will always hit this first
+            if (isset($hash[$p])) {
+                $hash[$p] =  $hash[$p] + 1; // We only care if we already have a hex number with this value
+            }
+
+        }
+        die("Increase our upper bound greater than $upper_bound! :-(");
     }
+
 }
