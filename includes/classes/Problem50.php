@@ -38,7 +38,8 @@ class Problem50 extends Problem_Abstract
      * Description of input
      * @const string INPUT
      */
-    const INPUT = '';
+    // const UPPER_BOUND = 1000000;
+    const UPPER_BOUND = 1000; // Test case, should be 953
 
     /**
      * Override default timeout of 60 seconds
@@ -62,7 +63,7 @@ class Problem50 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        return $this->findSomething(self::UPPER_BOUND);
     }
 
     /**
@@ -72,8 +73,70 @@ class Problem50 extends Problem_Abstract
      *
      * @return int description
      */
-    private function findSomething($number){
+    private function findSomething($upper_bound){
+        $primes = array();
+        for ($i = 2; $i < $upper_bound; $i++) {
+            if ($this->isPrime($i)) {
+                $primes[] = $i;
+            }
+        }
 
-        return;
+        $val = 41;
+        $pos = array_search($val, $primes);
+        
+
+        for ($start = 0; $start < $pos - 3; $start++) {
+            $prime_sum = 0;
+            for ($end = $start + 3; $end < $pos - 1; $end++) {
+                echo "testing ".var_export($prime_seq, true)."\n";
+                $prime_seq = array_slice($primes, $start, ($end - $start));
+                $prime_test = array_sum($prime_seq);
+                if ($val == $prime_test) {
+                    echo var_export($prime_seq, true)."\n";
+                    return $val;
+                }
+            }
+        }
+           
+
+
+        return "crap";;
     }
+
+    /**
+     * Test for Prime-ness
+     *
+     * @param string $n Number to test for primality
+     *
+     * @return boolean Is number prime?
+     */
+    private function isPrime($n) {
+        static $primes = array(2, 3);
+        if ($n === 1) {
+            return false;
+        } elseif ($n <= 3) {
+            return true;
+        } elseif ($n % 2 == 0 || $n % 3 == 0) {
+            return false;
+        } else {
+            foreach ($primes as $prime) { // Use sieve
+                if ($n > $prime && $n % $prime == 0) {
+                    return false;
+                }
+            }
+            // TODO: Come back and understand this prime test algo better
+            for ($i = 5; $i <= sqrt($n) + 1; $i += 6) {
+                if ($n % $i == 0 || $n % ($i + 2) == 0) {
+                    return false;
+                }
+            }
+            // Store in sieve
+            if ($n < 300 && !in_array($n, $primes)) {
+                $primes[] = $n;
+            }
+            return true;
+        }
+    }
+
+
 }
