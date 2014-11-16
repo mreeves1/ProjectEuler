@@ -38,8 +38,8 @@ class Problem50 extends Problem_Abstract
      * Description of input
      * @const string INPUT
      */
-    // const UPPER_BOUND = 1000000;
-    const UPPER_BOUND = 1000; // Test case, should be 953
+    const UPPER_BOUND = 1000000;
+    // const UPPER_BOUND = 1000; // Test case, should be 953
 
     /**
      * Override default timeout of 60 seconds
@@ -81,7 +81,8 @@ class Problem50 extends Problem_Abstract
             }
         }
 
-        $val = 41;
+        // $val = 41;
+        $val = 953;
         $pos = array_search($val, $primes);
         
 
