@@ -24,7 +24,7 @@ class Problem50 extends Problem_Abstract
      * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
      * takes for the script to timeout
      */
-    const TIMEOUT_OVERRIDE = 60;
+    const TIMEOUT_OVERRIDE = 600;
 
     /**
      * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
@@ -48,7 +48,7 @@ class Problem50 extends Problem_Abstract
     {
         parent::__construct(); 
 
-        // $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
+        $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
 
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code
@@ -74,34 +74,48 @@ class Problem50 extends Problem_Abstract
      * @return int description
      */
     private function findSomething($upper_bound){
+        // generate primes
         $primes = array();
+        $t1 = microtime(true);
         for ($i = 2; $i < $upper_bound; $i++) {
             if ($this->isPrime($i)) {
                 $primes[] = $i;
             }
         }
+        $t2 = microtime(true);
+        echo round(($t2-$t1), true);
+        die();
 
         // $val = 41;
-        $val = 953;
-        $pos = array_search($val, $primes);
-        
+        // $val = 953; 
+        $most_consec = 0;
+        $answer = 41; // initial value
+        foreach ($primes as $test_sum) {
+            $pos = array_search($test_sum, $primes);
 
-        for ($start = 0; $start < $pos - 3; $start++) {
-            $prime_sum = 0;
-            for ($end = $start + 3; $end < $pos - 1; $end++) {
-                echo "testing ".var_export($prime_seq, true)."\n";
-                $prime_seq = array_slice($primes, $start, ($end - $start));
-                $prime_test = array_sum($prime_seq);
-                if ($val == $prime_test) {
-                    echo var_export($prime_seq, true)."\n";
-                    return $val;
+            for ($start = 0; $start < $pos - 3; $start++) {
+                $prime_sum = 0;
+                for ($end = $start + 3; $end < $pos - 1; $end++) {
+                    // echo "testing ".var_export($prime_seq, true)."\n"; // debug
+                    $prime_seq = array_slice($primes, $start, ($end - $start));
+                    $prime_sum = array_sum($prime_seq);
+                    if ($test_sum == $prime_sum && $this->isPrime($test_sum)) {
+                        $cnt = count($prime_seq);
+
+                        if ($cnt > $most_consec) {
+                            $most_consec = $cnt;
+                            $answer = $test_sum;
+                            echo "New Prime Answer is $answer with $cnt consecutive primes:\n";
+                            echo var_export($prime_seq, true)."\n";
+                        }
+       
+                    } elseif ($prime_sum > $test_sum) {
+                        break;
+                    }
                 }
             }
         }
-           
-
-
-        return "crap";;
+        return $answer;
     }
 
     /**
