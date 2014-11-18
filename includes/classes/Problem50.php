@@ -18,28 +18,12 @@
  */
 class Problem50 extends Problem_Abstract
 {
-    /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
-     */
-    const TIMEOUT_OVERRIDE = 600;
-
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '64M';
 
     /**
      * Description of input
      * @const string INPUT
      */
     const UPPER_BOUND = 1000000;
-    // const UPPER_BOUND = 1000; // Test case, should be 953
 
     /**
      * Override default timeout of 60 seconds
@@ -47,13 +31,6 @@ class Problem50 extends Problem_Abstract
     public function __construct()
     {
         parent::__construct(); 
-
-        $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
-
-        if (!extension_loaded('bcmath')) {
-            // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
-        }
     }
 
     /**
@@ -63,58 +40,58 @@ class Problem50 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::UPPER_BOUND);
+        return $this->findConsecutivePrimeSum(self::UPPER_BOUND);
     }
 
     /**
-     * Find "Something".
+     * Find longest prime sum of consecutive primes under $upper_bound
      *
-     * @param string $number description
+     * @param int $upper_bound Number under which we find our solution
      *
-     * @return int description
+     * @return int Prime number sum of consecutive primes
      */
-    private function findSomething($upper_bound){
-        // generate primes
+    private function findConsecutivePrimeSum($upper_bound){
+        // generate primes and consecutive sum array
         $primes = array();
-        $t1 = microtime(true);
+        $sums = array(0); // first element 0 so I can simplify window generation
+        $tmp_sum = 0;
         for ($i = 2; $i < $upper_bound; $i++) {
             if ($this->isPrime($i)) {
                 $primes[] = $i;
-            }
-        }
-        $t2 = microtime(true);
-        echo round(($t2-$t1), true);
-        die();
-
-        // $val = 41;
-        // $val = 953; 
-        $most_consec = 0;
-        $answer = 41; // initial value
-        foreach ($primes as $test_sum) {
-            $pos = array_search($test_sum, $primes);
-
-            for ($start = 0; $start < $pos - 3; $start++) {
-                $prime_sum = 0;
-                for ($end = $start + 3; $end < $pos - 1; $end++) {
-                    // echo "testing ".var_export($prime_seq, true)."\n"; // debug
-                    $prime_seq = array_slice($primes, $start, ($end - $start));
-                    $prime_sum = array_sum($prime_seq);
-                    if ($test_sum == $prime_sum && $this->isPrime($test_sum)) {
-                        $cnt = count($prime_seq);
-
-                        if ($cnt > $most_consec) {
-                            $most_consec = $cnt;
-                            $answer = $test_sum;
-                            echo "New Prime Answer is $answer with $cnt consecutive primes:\n";
-                            echo var_export($prime_seq, true)."\n";
-                        }
-       
-                    } elseif ($prime_sum > $test_sum) {
-                        break;
-                    }
+                $tmp_sum += $i;
+                $sums[] = $tmp_sum;
+                if ($this->isPrime($tmp_sum) && $tmp_sum < $upper_bound) {
+                    // echo "sum and prime: $tmp_sum \n"; // debug
+                }
+                if ($tmp_sum > $upper_bound) { // we don't really need all these primes
+                    break;
                 }
             }
         }
+        
+        $most_consec = 0;
+        $answer = 41; // initial value
+        // bounds arbitrarily chosen but logically because if we start too high we will get fewer consec sums before we hit our $upper_bound
+        $sum_lower_bound = 100; 
+        $sum_upper_bound = 600;
+        for ($win_start = 0; $win_start < $sum_lower_bound; $win_start++) {
+            for ($win_end = 534; $win_end < $sum_upper_bound; $win_end++) { // first 536 primes is the prime 958577
+                if (isset($sums[$win_end])) {
+                    $test_sum = $sums[$win_end] - $sums[$win_start];
+                    $test_cnt = $win_end - $win_start;
+                    if ($this->isPrime($test_sum) && $test_sum < $upper_bound) {
+                        if ($test_cnt > $most_consec) {
+                            $most_consec = $test_cnt;
+                            $answer = $test_sum;
+                            // echo "Found $test_sum with $test_cnt members\n"; // debug          
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        
         return $answer;
     }
 
