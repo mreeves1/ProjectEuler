@@ -76,4 +76,40 @@ class Problem47 extends Problem_Abstract
 
         return;
     }
+
+    /**
+     * Test for Prime-ness
+     *
+     * @param string $n Number to test for primality
+     *
+     * @return boolean Is number prime?
+     */
+    private function isPrime($n) {
+        static $primes = array(2, 3);
+        if ($n === 1) {
+            return false;
+        } elseif ($n <= 3) {
+            return true;
+        } elseif ($n % 2 == 0 || $n % 3 == 0) {
+            return false;
+        } else {
+            foreach ($primes as $prime) { // Use sieve
+                if ($n > $prime && $n % $prime == 0) {
+                    return false;
+                }
+            }
+            // TODO: Come back and understand this prime test algo better
+            for ($i = 5; $i <= sqrt($n) + 1; $i += 6) {
+                if ($n % $i == 0 || $n % ($i + 2) == 0) {
+                    return false;
+                }
+            }
+            // Store in sieve
+            if ($n < 300 && !in_array($n, $primes)) {
+                $primes[] = $n;
+            }
+            return true;
+        }
+    }
+
 }
