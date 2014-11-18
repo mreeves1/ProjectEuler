@@ -1,20 +1,25 @@
 <?php
 /**
- * Project Euler - Problem 79
+ * Project Euler - Problem 243
  *
- * Passcode derivation
+ * Resilience
  *
- * A common security method used for online banking is to ask the user for three random characters from a passcode. For example, if the passcode was 531278, they may ask for the 2nd, 3rd, and 5th characters; the expected reply would be: 317.
- * The text file, keylog.txt, contains fifty successful login attempts.
- * Given that the three characters are always asked for in order, analyse the file so as to determine the shortest possible secret passcode of unknown length. 
+ * A positive fraction whose numerator is less than its denominator is called a proper fraction.
+ * For any denominator, d, there will be d−1 proper fractions; for example, with d = 12:1/12 , 2/12 , 3/12 , 4/12 , 5/12 , 6/12 , 7/12 , 8/12 , 9/12 , 10/12 , 11/12 .
+ * 
+ * We shall call a fraction that cannot be cancelled down a resilient fraction.
+ * Furthermore we shall define the resilience of a denominator, R(d), to be the ratio of its proper fractions that are resilient; for example, R(12) = 4/11 .
+ * In fact, d = 12 is the smallest denominator having a resilience R(d) 4/10 .
+ * 
+ * Find the smallest denominator d, having a resilience R(d) 15499/94744 . 
  *
  * @category ProjectEuler
- * @package Problem79
+ * @package Problem243
  * @author Michael Reeves <mike.reeves@gmail.com>
- * @link http://projecteuler.net/problem=79
+ * @link http://projecteuler.net/problem=243
  *
  */
-class Problem79 extends Problem_Abstract
+class Problem243 extends Problem_Abstract
 {
     /**
      * Project Euler says each problem should take no more than 1 minute. 
