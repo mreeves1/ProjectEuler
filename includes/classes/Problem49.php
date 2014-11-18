@@ -1,25 +1,24 @@
 <?php
 /**
- * Project Euler - Problem 47
+ * Project Euler - Problem 49
  *
- * Distinct primes factors
+ * Prime permutations
  *
- * The first two consecutive numbers to have two distinct prime factors are:
- * 14 = 2 × 7
- * 15 = 3 × 5
- * The first three consecutive numbers to have three distinct prime factors are:
- * 644 = 2² × 7 × 23
- * 645 = 3 × 5 × 43
- * 646 = 2 × 17 × 19.
- * Find the first four consecutive integers to have four distinct prime factors. What is the first of these numbers? 
+ * The arithmetic sequence, 1487, 4817, 8147, in which each of the terms increases by 3330, is unusual in two ways: 
+ * (i) each of the three terms are prime
+ * (ii) each of the 4-digit numbers are permutations of one another
+ *
+ * There are no arithmetic sequences made up of three 1-, 2-, or 3-digit primes, exhibiting this property, 
+ * but there is one other 4-digit increasing sequence.
+ * What 12-digit number do you form by concatenating the three terms in this sequence? 
  *
  * @category ProjectEuler
- * @package Problem47
+ * @package Problem49
  * @author Michael Reeves <mike.reeves@gmail.com>
- * @link http://projecteuler.net/problem=47
+ * @link http://projecteuler.net/problem=49
  *
  */
-class Problem47 extends Problem_Abstract
+class Problem49 extends Problem_Abstract
 {
     /**
      * Project Euler says each problem should take no more than 1 minute. 
@@ -79,40 +78,4 @@ class Problem47 extends Problem_Abstract
 
         return;
     }
-
-    /**
-     * Test for Prime-ness
-     *
-     * @param string $n Number to test for primality
-     *
-     * @return boolean Is number prime?
-     */
-    private function isPrime($n) {
-        static $primes = array(2, 3);
-        if ($n === 1) {
-            return false;
-        } elseif ($n <= 3) {
-            return true;
-        } elseif ($n % 2 == 0 || $n % 3 == 0) {
-            return false;
-        } else {
-            foreach ($primes as $prime) { // Use sieve
-                if ($n > $prime && $n % $prime == 0) {
-                    return false;
-                }
-            }
-            // TODO: Come back and understand this prime test algo better
-            for ($i = 5; $i <= sqrt($n) + 1; $i += 6) {
-                if ($n % $i == 0 || $n % ($i + 2) == 0) {
-                    return false;
-                }
-            }
-            // Store in sieve
-            if ($n < 300 && !in_array($n, $primes)) {
-                $primes[] = $n;
-            }
-            return true;
-        }
-    }
-
 }
