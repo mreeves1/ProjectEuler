@@ -33,10 +33,10 @@ class Problem79 extends Problem_Abstract
     const MEMORY_OVERRIDE = '64M';
 
     /**
-     * Description of input
+     * File with 5000+ first names (comma delimited and quoted)
      * @const string INPUT
      */
-    const INPUT = '';
+    const INPUT_FILE = 'files/problem79_keylog.txt';
 
     /**
      * Override default timeout of 60 seconds
@@ -60,7 +60,7 @@ class Problem79 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        return $this->findSomething(self::INPUT_FILE);
     }
 
     /**
@@ -70,8 +70,14 @@ class Problem79 extends Problem_Abstract
      *
      * @return int description
      */
-    private function findSomething($number){
-
-        return;
+    private function findSomething($input_file) 
+    {                            
+        $lines = file($input_file);
+        $lines = array_map("trim", $lines);
+        $lines = array_map("intval", $lines);
+        $lines = array_unique($lines);
+        sort($lines);
+        echo var_export($lines, true);                                    
+        return false;
     }
 }
