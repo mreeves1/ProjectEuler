@@ -16,39 +16,17 @@
 class Problem56 extends Problem_Abstract
 {
     /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
+     * Largest value for a and b
+     * @const string UPPER_BOUND
      */
-    const TIMEOUT_OVERRIDE = 60;
+    const UPPER_BOUND = 100;
 
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '64M';
-
-    /**
-     * Description of input
-     * @const string INPUT
-     */
-    const INPUT = '';
-
-    /**
-     * Override default timeout of 60 seconds
-     */
     public function __construct()
     {
         parent::__construct(); 
-
-        // $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
-
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
+            die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
         }
     }
 
@@ -59,18 +37,26 @@ class Problem56 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        return $this->findMaxDigitalSum(self::UPPER_BOUND);
     }
 
     /**
-     * Find "Something".
+     * Find the maximum sum of the digits of a^b where a and b < 100 
      *
-     * @param string $number description
+     * @param int $upper_bound Maximum value of a and b
      *
-     * @return int description
+     * @return int Maximum digital sum
      */
-    private function findSomething($number){
-
-        return;
+    private function findMaxDigitalSum($upper_bound){
+        $max_digit_sum = 0;
+        for ($a = 1; $a < $upper_bound; $a++) {
+            for ($b = 1; $b < $upper_bound; $b++) {
+                $val = bcpow($a, $b);
+                $digits = str_split($val);
+                $sum = array_sum($digits);
+                $max_digit_sum = $sum > $max_digit_sum ? $sum : $max_digit_sum;
+            }
+        }
+        return $max_digit_sum;
     }
 }
