@@ -24,26 +24,10 @@
 class Problem53 extends Problem_Abstract
 {
     /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
+     * Greatest value of n and r
+     * @const int UPPER_BOUND
      */
-    const TIMEOUT_OVERRIDE = 60;
-
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '64M';
-
-    /**
-     * Description of input
-     * @const string INPUT
-     */
-    const INPUT = '';
+    const UPPER_BOUND = 100;
 
     /**
      * Override default timeout of 60 seconds
@@ -56,7 +40,7 @@ class Problem53 extends Problem_Abstract
 
         if (!extension_loaded('bcmath')) {
             // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
+            die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
         }
     }
 
@@ -67,18 +51,55 @@ class Problem53 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        return $this->countCombinatoricSelections(self::UPPER_BOUND);
     }
 
     /**
-     * Find "Something".
+     * Count how many combinatoric selections below 1000000 where r <= n and n <= 100 
      *
-     * @param string $number description
+     * @param string $upper_bound n and r < $upper_bound
      *
-     * @return int description
+     * @return int Count of selections
      */
-    private function findSomething($number){
+    private function countCombinatoricSelections($upper_bound)
+    {
+        $cnt = 0;
+        for ($n = 1; $n <= $upper_bound; $n++) {
+            for ($r = 1; $r <= $n; $r++) {
+                $n_fact = $this->bcfact($n);
+                $n_r_fact = $this->bcfact($n-$r);
+                $r_fact = $this->bcfact($r);
+                $denom = bcmul($r_fact, $n_r_fact);
+                $c = bcdiv($n_fact, $denom);
+                if ($c > 1000000) {
+                   $cnt++;
+                }
+            }
+        }
+        return $cnt;
+    }
 
-        return;
+
+    /**
+     * Calculate the factorial when the result is outside 
+     * of normal integer bounds
+     *
+     * @param int $n Number to raise to its factorial
+     *
+     * @return string $n!
+     */
+    private function bcfact($n) {
+        static $fact_map = array();
+
+        if (isset($fact_map[$n])) {
+            return $fact_map[$n];;
+        } else {
+            $result = '1';
+            for ($i = 1; $i <= $n; $i++) {
+                $result = bcmul((string) $i, $result);
+            }
+            $fact_map[$n] = $result;
+            return $result;
+        }
     }
 }
