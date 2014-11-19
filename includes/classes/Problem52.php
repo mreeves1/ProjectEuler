@@ -16,26 +16,10 @@
 class Problem52 extends Problem_Abstract
 {
     /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
-     */
-    const TIMEOUT_OVERRIDE = 60;
-
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '64M';
-
-    /**
      * Description of input
-     * @const string INPUT
+     * @const int UPPER_BOUND
      */
-    const INPUT = '';
+    const UPPER_BOUND = 10000000;
 
     /**
      * Override default timeout of 60 seconds
@@ -43,13 +27,6 @@ class Problem52 extends Problem_Abstract
     public function __construct()
     {
         parent::__construct(); 
-
-        // $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
-
-        if (!extension_loaded('bcmath')) {
-            // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
-        }
     }
 
     /**
@@ -59,18 +36,44 @@ class Problem52 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        return $this->findPermutedMultiples(self::UPPER_BOUND);
     }
 
     /**
-     * Find "Something".
+     * Find the smallest positive integer where a number
+     * x, 2x, 3x, 4x, 5x, 6x have all the same digits
      *
-     * @param string $number description
+     * @param string $upper_bound
      *
-     * @return int description
+     * @return int
      */
-    private function findSomething($number){
+    private function findPermutedMultiples($upper_bound)
+    {
+        for ($i = 100000; $i < $upper_bound; $i++) {
+            $x1 = $this->rsortInt($i);
+            $x2 = $this->rsortInt($i * 2);
+            $x3 = $this->rsortInt($i * 3);
+            $x4 = $this->rsortInt($i * 4);
+            $x5 = $this->rsortInt($i * 5);
+            $x6 = $this->rsortInt($i * 6);
+            if ($x1 == $x2 && $x1 == $x3 && $x1 == $x4 && $x1 == $x5 && $x1 == $x6) {
+                return $i;
+            }
+        }
+    }
 
-        return;
+    /**
+     * Take an integer, turn it into a string and reverse sort it
+     *
+     * @param int $int
+     *
+     * @return string 
+     */
+    private function rsortInt($int) 
+    {
+        $a = str_split((string) $int);
+        rsort($a);
+        $str = implode("", $a);
+        return $str;
     }
 }
