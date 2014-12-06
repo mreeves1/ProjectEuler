@@ -92,9 +92,12 @@ class Problem92 extends Problem_Abstract
 
     private function testNum($num)
     {
+        /*
+        // closures + array_map = slow :-(
         $square = function($val) {
             return pow($val, 2);
         };
+        */
  
         if ($num == 89) {
             return true;
@@ -103,7 +106,12 @@ class Problem92 extends Problem_Abstract
         } else {
             // get next number
             $digits = str_split((string) $num);
-            $new_num = array_sum(array_map($square, $digits));
+            // $new_num = array_sum(array_map($square, $digits)); // part of closure solution
+            $new_num = 0;
+            $d_cnt = count($digits);
+            for ($i = 0; $i < $d_cnt; $i++) {
+                $new_num += pow($digits[$i],2);
+            }
             return $this->testNum($new_num);
         }
     }
