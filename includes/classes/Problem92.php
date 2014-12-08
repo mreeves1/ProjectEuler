@@ -78,18 +78,14 @@ class Problem92 extends Problem_Abstract
     {
         $count = 0;
         for ($i = 2; $i < $upper_bound; $i++) {
-            $test = $this->testNum($i);
-            if ($i % 100000 == 0) { echo "tested $i"; }
-            if ($test) {
-                // echo "$i converges to 89\n";
-                $count++; 
-            } else {
-                // echo "$i converges to 1\n";
-            }
+            $count += $this->testNum($i) ? 1 : 0;
+            // if ($i % 100000 == 0) { echo "tested $i\n"; } // debug
         }
         return $count;
     }
 
+    // TODO: Improve this method - we could order all the digits to tokenize this to reduce ops
+    //       That is a number like 145 and 541 and 415 will all converge to the same number... 
     private function testNum($num)
     {
         /*
