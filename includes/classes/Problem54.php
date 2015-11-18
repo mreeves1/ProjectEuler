@@ -59,7 +59,12 @@ class Problem54 extends Problem_Abstract
      * Description of input
      * @const string INPUT
      */
-    const INPUT = '';
+    const INPUT_FILE = 'files/problem54_poker.txt';
+
+    const POINTS_ROYAL_FLUSH = 1000;
+    const POINTS_STRAIGHT_FLUSH = 900;
+    const POINTS_FLUSH = 600;
+    const POINTS_STRAIGHT = 500;
 
     /**
      * Override default timeout of 60 seconds
@@ -83,7 +88,18 @@ class Problem54 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT);
+        // return $this->findPlayer1Wins(self::INPUT_FILE);
+        // $p1_h1 = array('5H', '5C', '6S', '7S', 'KD');
+        $p1_h1 = array('10C', 'JC', 'QC', 'KC', 'AC');
+        // $p2_h1 = array('2C', '3S', '8S', '8D', 'TD');
+        $p2_h1 = array('2C', '3C', '8C', '7C', '10C');
+        echo $this->scoreHand($p1_h1);
+        echo $this->scoreHand($p2_h1);
+        // $p1_h2 = array('5D', '8C', '9S', 'JS', 'AC');
+        $p1_h2 = array('2C', '4C', '3C', '5C', '6C');
+        $p2_h2 = array('3D', '5C', '7D', '8S', 'QH');
+        echo $this->scoreHand($p1_h2);
+        echo $this->scoreHand($p2_h2);
     }
 
     /**
@@ -93,8 +109,80 @@ class Problem54 extends Problem_Abstract
      *
      * @return int description
      */
-    private function findSomething($number){
+    private function findPlayer1Wins($input_file){
+        $lines = file($input_file);
+        foreach ($lines as $i => $line) {
+            $tmp_array = explode(" ", trim($line));
+            $p1_cards = array_slice($tmp_array, 0, 5);
+            sort($p1_cards);
+            $p2_cards = array_slice($tmp_array, 5, 5);
+            sort($p2_cards);
+            echo "player 1 cards: \n";
+            // var_dump($p1_cards); // debug
+            echo "player 2 cards: \n";
+            // var_dump($p2_cards); // debug
 
-        return;
+            // return;
+        }
+    }
+
+    private function scoreHand($hand) {
+        var_dump($hand);
+        $score = 0;
+        // Royal Flush
+        $suits = array();
+        $values = array();
+        foreach ($hand as $card) {
+            $suit = substr($card, -1);
+            $val = substr($card, 0, -1);
+            $suits[$suit] = isset($suits[$suit]) ? $suits[$suit] + 1 : 1;
+            $values[$val] = isset($values[$val]) ? $values[$val] + 1 : 1;
+        }
+        arsort($suits);
+        arsort($values);
+        var_dump($suits);
+        var_dump($values);
+        $score1 = $this->scoreFlushesAndStraights($suits, $values);
+        echo $score1;
+        echo "\n";
+    }
+
+    private function scoreFlushesAndStraights($suits, $values) {
+      $straight_values = array('Q', 'K', 'J', 'A', 10, 9, 8, 7, 6, 5, 3, 2);
+      $royal_flush_values = array(10, 'Q', 'K', 'J', 'A');
+      
+      // Test Flushes
+      $common_suit = array_slice($suits, 0, 1);
+      echo 'suits most common: '.key($common_suit)."\n";
+      if (current($common_suit) == 5) {
+          echo '$royal_flush_values'."\n";
+          var_export($royal_flush_values);
+          $akv = array_keys($values);
+          rsort($akv);
+          echo 'array_keys($values)'."\n";
+          var_export($akv);
+          if ($akv == $royal_flush_values) {
+              return self::POINTS_ROYAL_FLUSH;
+          }
+          else {
+              for ($i = 0; $i <= 7; $i++) {
+                  if (array_keys($values) == array_slice($straight_values, $i, 5)) {
+                      return self::POINTS_STRAIGHT_FLUSH;
+                  }
+              }
+              return self::POINTS_FLUSH; // TODO: Calculate tie breakers
+          }
+/* 
+          $found_royal_flush = true;
+          foreach($royal_flush_values as $rfv) {
+              if (!isset($values[$rfv])) {
+                  $found_royal_flush = false;
+                  break;
+              }
+          }
+          if ($found_royal_flush) { return POINTS_ROYAL_FLUSH; }
+*/
+
+      }
     }
 }
