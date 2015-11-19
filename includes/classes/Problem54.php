@@ -59,7 +59,8 @@ class Problem54 extends Problem_Abstract
      * Description of input
      * @const string INPUT
      */
-    const INPUT_FILE = 'files/problem54_poker.txt';
+    // const INPUT_FILE = 'files/problem54_poker.txt';
+    const INPUT_FILE = 'files/problem54_poker_test.txt';
 
     const POINTS_ROYAL_FLUSH = 1000;
     const POINTS_STRAIGHT_FLUSH = 900;
@@ -90,9 +91,9 @@ class Problem54 extends Problem_Abstract
     {
         // return $this->findPlayer1Wins(self::INPUT_FILE);
         // $p1_h1 = array('5H', '5C', '6S', '7S', 'KD');
-        $p1_h1 = array('10C', 'JC', 'QC', 'KC', 'AC');
+        $p1_h1 = array('TC', 'JC', 'QC', 'KC', 'AC');
         // $p2_h1 = array('2C', '3S', '8S', '8D', 'TD');
-        $p2_h1 = array('2C', '3C', '8C', '7C', '10C');
+        $p2_h1 = array('2C', '3C', '8C', '7C', 'TC');
         echo $this->scoreHand($p1_h1);
         echo $this->scoreHand($p2_h1);
         // $p1_h2 = array('5D', '8C', '9S', 'JS', 'AC');
@@ -100,6 +101,11 @@ class Problem54 extends Problem_Abstract
         $p2_h2 = array('3D', '5C', '7D', '8S', 'QH');
         echo $this->scoreHand($p1_h2);
         echo $this->scoreHand($p2_h2);
+        // echo "regular straights";
+        // var_dump($this->getStraights());
+        // echo "royal straight";
+        // var_dump($this->getStraights(true));
+
     }
 
     /**
@@ -138,19 +144,84 @@ class Problem54 extends Problem_Abstract
             $suits[$suit] = isset($suits[$suit]) ? $suits[$suit] + 1 : 1;
             $values[$val] = isset($values[$val]) ? $values[$val] + 1 : 1;
         }
-        arsort($suits);
-        arsort($values);
-        var_dump($suits);
-        var_dump($values);
+//        arsort($suits);
+//        arsort($values);
+//        var_dump($suits);
+//        var_dump($values);
         $score1 = $this->scoreFlushesAndStraights($suits, $values);
         echo $score1;
         echo "\n";
     }
 
+    private function isFlush($suits) {
+        arsort($suits);
+        $common_suit = array_slice($suits, 0, 1);
+        return current($common_suit) == 5 ? true : false;
+    }
+
+    // generate an array of arrays of all straights
+    private function getStraights($royal_only = false) {
+        $val_map = array(
+            1 => 'A', // not explicitly stated in problem but common in cards
+            10 => 'T',
+            11 => 'J',
+            12 => 'Q',
+            13 => 'K',
+            14 => 'A'
+        );
+        $straights = [];
+        $i_min = $royal_only === true ? 10 : 1;
+        for ($i = 10; $i >= $i_min; $i--) {
+            $tmp = array();
+            for ($j = $i; $j <= $i + 4; $j++) {
+                $tmp[] = isset($val_map[$j]) ? $val_map[$j] : $j;
+            }
+            $straights[] = $tmp;
+        }
+        return $straights;
+    }
+
+    private function isRegularStraight($values) {
+        $straights = $this->getStraights();
+        return $this->isStraight($values, $straights);
+    }
+
+    private function isRoyalStraight($values) {
+        $straights = $this->getStraights(true);
+        return $this->isStraight($values, $straights);
+    }
+
+    private function isStraight($values, $straights) {
+        if (count($values) !== 5) { return false; }
+        foreach ($straights as $s) {
+            $found = true;
+            foreach ($s as $card) {
+                if (!isset($values[$card])) {
+                    $found = false;
+                    break;
+                }
+            }
+            if ($found = true) {return true;}
+        }
+        return false;
+    }
+
     private function scoreFlushesAndStraights($suits, $values) {
+        $is_flush = $this->isFlush($suits);
+        $is_reg_straight = $this->isRegularStraight($values);
+        $is_royal_straight = $this->isRoyalStraight($values);
+
+        echo "Flush: $is_flush\n";
+        echo "Regular Straight: $is_reg_straight\n";
+        echo "Royal Straight: $is_royal_straight\n";
+        // TODO:
+
+    }
+
+    private function scoreFlushesAndStraightsOld($suits, $values) {
       $straight_values = array('Q', 'K', 'J', 'A', 10, 9, 8, 7, 6, 5, 3, 2);
       $royal_flush_values = array(10, 'Q', 'K', 'J', 'A');
-      
+ 
       // Test Flushes
       $common_suit = array_slice($suits, 0, 1);
       echo 'suits most common: '.key($common_suit)."\n";
