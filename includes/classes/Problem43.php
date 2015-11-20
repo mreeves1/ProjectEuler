@@ -22,7 +22,7 @@
 
  * d<sub>8</sub>d<sub>9</sub>d<sub>10</sub> = 289 is divisible by 17
 
- * Find the sum of all 0 to 9 pandigital numbers with this property. 
+ * Find the sum of all 0 to 9 pandigital numbers with this property.
  *
  * @category ProjectEuler
  * @package Problem43
@@ -32,42 +32,11 @@
  */
 class Problem43 extends Problem_Abstract
 {
-    /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
-     */
-    const TIMEOUT_OVERRIDE = 60;
+    private $possibles;
 
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '64M';
-
-    /**
-     * Description of input
-     * @const string INPUT
-     */
-    // const UPPER_BOUND = 9876543210;
-    const UPPER_BOUND = 1567894320;
-
-    /**
-     * Override default timeout of 60 seconds
-     */
     public function __construct()
     {
         parent::__construct(); 
-
-        // $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
-
-        if (!extension_loaded('bcmath')) {
-            // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
-        }
     }
 
     /**
@@ -77,69 +46,101 @@ class Problem43 extends Problem_Abstract
      */
     public function execute()
     {
-        // return $this->isSubstringDivisible(1406357289);
-        return $this->sumSubStringDivisiblePandigitalNumbers(self::UPPER_BOUND);
+        return $this->findSubStringDivisiblePandigitalNumbers();
     }
 
     /**
-     * Find "Something".
-     *
-     * @param string $number description
-     *
-     * @return int description
+     * Figure out all the permuations any given set of 3 digits could be
+     * and build up the possible strings from there instead of testing a
+     * huge number space to see if the number conforms.
      */
-    private function sumSubStringDivisiblePandigitalNumbers($upper_bound){
-        $pandigital_sum = 0;
-        // for ($i = 1234567890; $i <= $upper_bound; $i++) {
-        for ($i = 1406357289; $i <= $upper_bound; $i++) {
-            if ($this->isPandigital($i)) {
-                // echo "Found pandigital # $i\n"; // debug
-                if ($this->isSubstringDivisible($i)) {
-                    echo "Found substring divisible # $i\n"; // debug
-                    $pandigital_sum += $i;
-                    echo "Added $i to sum.\n"; // debug
+    private function getPermutations()
+    {
+        $divisors = array(2, 3, 5, 7, 11, 13, 17);
+        $perms = [];
+        foreach ($divisors as $d) {
+            $tmp = [];
+            for ($i = 12; $i <= 987; $i++) {
+                if ($i % $d === 0) {
+                    $tmp[] = str_pad($i, 3, "0", STR_PAD_LEFT);
+                }
+            }
+            $perms[] = $tmp;
+            /* // debug
+            echo "$d has ".count($tmp)." permutations:\n";
+            echo implode(",",$tmp)."\n";
+            */
+        }
+        return $perms;
+    }
+
+    private function findSubStringDivisiblePandigitalNumbers()
+    {
+        $perms = $this->getPermutations();
+        $perm = $perms[0];
+        // initial conditions
+        foreach ($perm as $p) {
+            $this->buildNumbers($p, array_slice($perms, 1)); 
+        }
+
+        $answers = [];
+        $sum = 0;
+        for ($i = 1; $i <= 9; $i++) {
+            foreach ($this->possibles as $p) {
+                if ($this->isPandigital((string) $i.$p)) {
+                    $answer = $i.$p;
+                    // echo "Answer found! $answer \n"; // debug
+                    $sum += (int) $answer;
+                    $answers[] = $answer;
                 }
             }
         }
-        return $pandigital_sum;
+        return $sum;
     }
 
     /**
-     * Test for pandigital-ness                            
-     * e.g. when a numbers digits are ordered they go from 0 to n where n is the number of digits in the number
-     *                                                     
-     * @param string $n Number to check                    
-     *                                                     
-     * @return boolean Is number pandigital?               
-     */                                                    
-    private function isPandigital($n) 
-    {                    
-        $digits = str_split($n);                           
-        rsort($digits);                                     
-        $digits_str = implode("", $digits);                
-        $test_full = "9876543210";                          
-        $test_str = substr($test_full, 0, strlen($digits_str));
-        return (strcmp($test_str, $digits_str) === 0);     
+     * Brute force failed miserably... So instead let's build from what we know
+     * Narrow down our options by making sure the last 2 digits of a
+     * permutation "level" meet those of the next "level"
+     *
+     * Obviously this has to be a recursive function where we keep building up
+     * a valid "start" of the string with a shorter set of "permutation levelsi"
+     * Also spent *WAY* too much time figuring out how to build up "possibles"
+     * before I just decided to use a private variable to append to. Derp.
+     */
+    private function buildNumbers($start, $perms) {
+        $possibles = [];
+        $new_perm = $perms[0];
+
+        foreach ($new_perm as $p) {
+            if (substr($start, -2) == substr($p, 0, 2)) {
+                $new_start = (string) $start.substr($p, -1);
+                if (count($perms) == 1) {
+                     // echo "Added a possible:".$new_start."\n"; // debug
+                     $this->possibles[] = $new_start;
+                } else {
+                     $this->buildNumbers($new_start, array_slice($perms, 1));
+                }
+            }
+        }
     }
 
-    private function isSubstringDivisible($n) 
+    /**
+     * Test for pandigital-ness
+     * e.g. when a numbers digits are ordered they go from 0 to n where n is
+     * the number of digits in the number
+     *
+     * @param string $n Number to check
+     *
+     * @return boolean Is number pandigital?
+     */
+    private function isPandigital($n)
     {
-        $divisors = array(2, 3, 5, 7, 11, 13, 17);
-        // optimizations
-        if ((int) substr($n, 5, 1) !== 5) {
-            return false;
-        }
-
-        for ($i = 7; $i >= 1; $i--) {
-            $num = (int) substr($n, $i, 3);
-            $div = $divisors[$i - 1];
-            if ($n == 1406357289) {
-                echo "$n , numerator: $num, divisor: $div \n";
-            }
-            if ($num % $div != 0) {
-                return false;
-            }
-        }
-        return true;
+        $digits = str_split($n);
+        rsort($digits);
+        $digits_str = implode("", $digits);
+        $test_full = "9876543210";
+        $test_str = substr($test_full, 0, strlen($digits_str));
+        return (strcmp($test_str, $digits_str) === 0);
     }
 }
