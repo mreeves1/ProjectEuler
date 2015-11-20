@@ -90,12 +90,14 @@ class Problem43 extends Problem_Abstract
      */
     private function sumSubStringDivisiblePandigitalNumbers($upper_bound){
         $pandigital_sum = 0;
-        for ($i = 1234567890; $i <= $upper_bound; $i++) {
-            if ($this->isSubstringDivisible($i)) {
-                echo "Found substring divisible # $i\n"; // debug
-                if ($this->isPandigital($i)) {
+        // for ($i = 1234567890; $i <= $upper_bound; $i++) {
+        for ($i = 1406357289; $i <= $upper_bound; $i++) {
+            if ($this->isPandigital($i)) {
+                // echo "Found pandigital # $i\n"; // debug
+                if ($this->isSubstringDivisible($i)) {
+                    echo "Found substring divisible # $i\n"; // debug
                     $pandigital_sum += $i;
-                    echo "Added $n to sum.\n"; // debug
+                    echo "Added $i to sum.\n"; // debug
                 }
             }
         }
@@ -123,7 +125,12 @@ class Problem43 extends Problem_Abstract
     private function isSubstringDivisible($n) 
     {
         $divisors = array(2, 3, 5, 7, 11, 13, 17);
-        for ($i = 1; $i <= 7; $i++) {
+        // optimizations
+        if ((int) substr($n, 5, 1) !== 5) {
+            return false;
+        }
+
+        for ($i = 7; $i >= 1; $i--) {
             $num = (int) substr($n, $i, 3);
             $div = $divisors[$i - 1];
             if ($n == 1406357289) {
