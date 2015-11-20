@@ -36,6 +36,9 @@
  * @author Michael Reeves <mike.reeves@gmail.com>
  * @link http://projecteuler.net/problem=54
  *
+ * TIL: array_shift does not work well with array_unshift
+ *      also array_slice needs to have the preserve keys variable set to true in 
+ *      most cases... 
  */
 class Problem54 extends Problem_Abstract
 {
