@@ -54,7 +54,7 @@ $current_problem = isset($_GET['problem']) ? $_GET['problem'] : '';
             $class_file = "includes/classes/$class_name.php";
             if (file_exists($class_file)) {
               $problem = new $class_name();
-              echo '<li>The answer to <a href="http://projecteuler.net/problem='.$i.'" target="_blank">';
+              echo '<li>The answer to <a href="http://projecteuler.net/problem='.$current_problem.'" target="_blank">';
               echo str_replace('Problem', 'Problem ', get_class($problem)).'</a> is '.$problem->execute().'.';
               echo "</li>\n";
             } else {
