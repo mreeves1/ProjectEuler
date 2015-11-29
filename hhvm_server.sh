@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+PORT="8888"
+
 # first you must install hhvm
 # `brew tap hhvm/hhvm`
 # `brew install hhvm`
@@ -13,7 +15,8 @@
 # /usr/local/bin/hhvm --mode debug --port 8888 index.php 1
 # /usr/local/bin/hhvm --mode server --port 8888 index.php
 # /usr/local/bin/hhvm --mode server -c /usr/local/etc/hhvm/php.ini -c /usr/local/etc/hhvm/server.ini index.php
-/usr/local/bin/hhvm --mode server --port 8888 -c /usr/local/etc/hhvm/php.ini index.php
+echo "Starting HHVM Server on port ${PORT}"
+/usr/local/bin/hhvm --mode server --port ${PORT} -c /usr/local/etc/hhvm/php.ini index.php
 
 # Only issue is the destructor does not send the output to the web browser. It does work with CGI though.
 # -vEval.EnableObjDestructCall=1 does not seem to help
