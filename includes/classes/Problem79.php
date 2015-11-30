@@ -17,22 +17,6 @@
 class Problem79 extends Problem_Abstract
 {
     /**
-     * Project Euler says each problem should take no more than 1 minute. 
-     * If your computer is slow make this larger.
-     * @const int TIMEOUT_OVERRIDE Used with an override method to control how long it 
-     * takes for the script to timeout
-     */
-    const TIMEOUT_OVERRIDE = 60;
-
-    /**
-     * Project Euler is silent on space complexity. PHP uses a LOT of memory for arrays. 
-     * Something like 20x what you would expect. 
-     * @const int MEMORY_OVERRIDE Used with an override method to control how much memory
-     * the script is allowed to consume.
-     */
-    const MEMORY_OVERRIDE = '64M';
-
-    /**
      * File with 5000+ first names (comma delimited and quoted)
      * @const string INPUT
      */
@@ -43,14 +27,7 @@ class Problem79 extends Problem_Abstract
      */
     public function __construct()
     {
-        parent::__construct(); 
-
-        // $this->overrideTimeoutAndMemoryLimit(self::TIMEOUT_OVERRIDE, self::MEMORY_OVERRIDE);
-
-        if (!extension_loaded('bcmath')) {
-            // Placeholder for any extensions required for this problem's code
-            // die('BCMath extension required. See http://www.php.net/manual/en/book.bc.php .');
-        }
+        parent::__construct();
     }
 
     /**
@@ -60,24 +37,54 @@ class Problem79 extends Problem_Abstract
      */
     public function execute()
     {
-        return $this->findSomething(self::INPUT_FILE);
+        return $this->findPasscodeDerivation(self::INPUT_FILE);
     }
 
     /**
-     * Find "Something".
+     * Find Passcode Derivation.
      *
-     * @param string $number description
+     * @param string $input_file File with keylog records
      *
-     * @return int description
+     * @return string Calculated password
      */
-    private function findSomething($input_file) 
+    private function findPasscodeDerivation($input_file)
     {                            
         $lines = file($input_file);
-        $lines = array_map("trim", $lines);
-        $lines = array_map("intval", $lines);
-        $lines = array_unique($lines);
-        sort($lines);
-        echo var_export($lines, true);                                    
-        return false;
+        $node_map = [];
+        $chars = [];
+        foreach ($lines as $l) {
+            list($a, $b, $c) = str_split(trim($l));
+            if (!in_array($a, $chars)) {$chars[] = $a;}
+            if (!in_array($b, $chars)) {$chars[] = $b;}
+            if (!in_array($c, $chars)) {$chars[] = $c;}
+            if (!isset($node_map[$a]) || !in_array($b, $node_map[$a])) {
+                $node_map[$a][] = $b;
+            }
+            if (!isset($node_map[$b]) || !in_array($c, $node_map[$b])) {
+                $node_map[$b][] = $c;
+            }
+        }
+
+        foreach ($chars as $char) {
+            $answer = $this->createString($char, $char, $node_map);
+            if ($answer) {
+                return $answer;
+            }
+        }
+    }
+
+    private function createString($total, $last, $map) {
+        if (strlen($total) == 8) { // TODO: 8 is the number of unique digits in the node map
+            return $total;
+        }
+        $current = isset($map[$last]) ? $map[$last] : array();
+        // echo "\nTrying total: $total, last: $last, curr: ".implode(', ', $current)."\n"; // debug
+        foreach($current as $m) {
+            $new_total = (string) $total.$m;
+            $answer = $this->createString($new_total, $m, $map);
+            if ($answer) {
+                return $answer;
+            }
+        }
     }
 }
